@@ -1,16 +1,34 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@mantine/core';
+import { useAuth } from '../contexts/AuthContext';
+import axios from 'axios';
+
 import '../css/Login.css';
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const { login } = useAuth();
 
-  const handleLogin = () => {
-    console.log(`Logging in with username: ${username} and password: ${password}`);
-    navigate('/home');
+  const handleLogin = async () => {
+    try {
+      // Effectuer la requête POST d'authentification
+      const response = await axios.post('URL_DE_VOTRE_API/login', {
+        username,
+        password,
+      });
+
+      // Traiter la réponse de l'API
+      console.log('Réponse de l\'API:', response.data);
+      login(response.data); 
+
+      // Naviguer vers la page d'accueil après une connexion réussie
+      navigate('/home');
+    } catch (error) {
+      console.error('Erreur lors de la connexion:', error);
+    }
   };
 
   const handleNavigateToRegister = () => {

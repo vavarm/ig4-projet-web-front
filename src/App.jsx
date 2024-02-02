@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { MantineProvider, createTheme, Button} from '@mantine/core';
+import { AuthProvider } from './contexts/AuthContext';
 import Navbar from './composants/Navbar';
 import Home from './roots/Home';
 import Planning from './roots/Planning';
@@ -33,41 +34,43 @@ const theme = createTheme({
 
 const App = () => {
   return (
-    <Router>
-      <Routes>
-        {/* Route englobant les pages nÃ©cessitant la Navbar */}
-        <Route
-          path="/home/*"
-          element={
-            <MantineProvider theme={{
-              fontFamily: 'Open Sans, sans-serif',
-              
-              lineHeight: 1.2,
-              primaryColor: 'green',
-              secondaryColor: 'blue',}}
+    <AuthProvider>
+      <MantineProvider
+                theme={{
+                  theme
+                }}
               >
-              <>
-                <Navbar />
-                <Routes>
-                  <Route path="/home" element={<Home />} />
-                  <Route path="/planning" element={<Planning />} />
-                  <Route path="/profil" element={<Profil />} />
-                </Routes>
-              </>
-            </MantineProvider>
-          }
-        />
+      <Router>
+        <Routes>
+          {/* Route englobant les pages nécessitant la Navbar */}
+          <Route
+            path="/home/*"
+            element={
+              
+                <>
+                  <Navbar />
+                  <Routes>
+                    <Route path="/home" element={<Home />} />
+                    <Route path="/planning" element={<Planning />} />
+                    <Route path="/profil" element={<Profil />} />
+                  </Routes>
+                </>
+              
+            }
+          />
 
-        {/* Route spÃ©cifique pour la page de connexion */}
-        <Route path="/login" element={<Login />} />
+          {/* Route spécifique pour la page de connexion */}
+          <Route path="/login" element={<Login />} />
 
-        {/* Route pour la page d'inscription */}
-        <Route path="/register" element={<Register />} />
+          {/* Route pour la page d'inscription */}
+          <Route path="/register" element={<Register />} />
 
-        {/* Redirection vers /login par dÃ©faut */}
-        <Route path="/" element={<Navigate to="/login" />} />
-      </Routes>
-    </Router>
+          {/* Redirection vers /login par défaut */}
+          <Route path="/" element={<Navigate to="/login" />} />
+        </Routes>
+      </Router>
+      </MantineProvider>
+    </AuthProvider>
   );
 };
 
