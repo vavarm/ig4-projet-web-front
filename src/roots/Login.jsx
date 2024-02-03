@@ -7,27 +7,43 @@ import axios from 'axios';
 import '../css/Login.css';
 
 const Login = () => {
-  const [username, setUsername] = useState('');
+  const [email, setemail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, user } = useAuth();
 
   const handleLogin = async () => {
     try {
       // Effectuer la requête POST d'authentification
-      const response = await axios.post('URL_DE_VOTRE_API/login', {
-        username,
+      const response = await axios.post('http://localhost:3000/auth/login', {
+        email,
         password,
       });
 
       // Traiter la réponse de l'API
       console.log('Réponse de l\'API:', response.data);
-      login(response.data); 
-
-      // Naviguer vers la page d'accueil après une connexion réussie
-      navigate('/home');
+      if (response.data.compteValide) {
+        // Connecter l'utilisateur
+        login(response.data);
+        
+        // Naviguer vers la page d'accueil après une connexion réussie
+        navigate('/home');
+      } else {
+        // Afficher une alerte si le compte n'est pas validé
+        alert("Votre inscription n'a pas encore été validée par un administrateur.");
+      }
     } catch (error) {
       console.error('Erreur lors de la connexion:', error);
+      if (error.response) {
+        // La requête a été effectuée et le serveur a répondu avec un statut qui n'est pas 2xx.
+        console.error('Réponse détaillée du serveur:', error.response.data);
+      } else if (error.request) {
+        // La requête a été effectuée mais aucune réponse n'a été reçue.
+        console.error('Aucune réponse du serveur reçue');
+      } else {
+        // Une erreur s'est produite lors de la configuration de la requête.
+        console.error('Erreur de configuration de la requête:', error.message);
+      }
     }
   };
 
@@ -40,8 +56,8 @@ const Login = () => {
       <h2>Connexion</h2>
       <form>
         <label>
-          Nom d'utilisateur:
-          <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
+          email:
+          <input type="text" value={email} onChange={(e) => setemail(e.target.value)} />
         </label>
         <br />
         <label>

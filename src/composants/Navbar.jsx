@@ -1,17 +1,28 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import '../css/Navbar.css'; // Importe le fichier CSS
 import logo from '../css/images/logo.png';
 import deco from '../css/images/deconnexion.png';
+import axios from 'axios';
 
 const Navbar = () => {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
-  const handleLogout = () => {
-    // Effectuer la requête POST de déconnexion
-    // Naviguer vers la page de connexion après une déconnexion réussie
-    console.log('Déconnexion');
-    logout();
+  const handleLogout = async () => {
+    try {
+      // Effectuer la requête POST de déconnexion
+      const response = await axios.post('http://localhost:3000/auth/logout');
+      // Naviguer vers la page de connexion après une déconnexion réussie
+      console.log('Déconnexion');
+      logout();
+      // Ajouter ici la logique pour rediriger l'utilisateur vers la page de connexion
+      navigate('/login')
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error);
+    }
   };
 
   return (
@@ -42,7 +53,5 @@ const Navbar = () => {
     </nav>
   );
 };
-
-
 
 export default Navbar;
