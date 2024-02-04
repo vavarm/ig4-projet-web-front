@@ -9,6 +9,7 @@ import Profil from './roots/Profil';
 import Login from './roots/Login';
 import Register from './roots/Register';
 import Inscription from './roots/Inscription';
+import Festival from './roots/Festival';
 
 
 const theme = createTheme({
@@ -52,6 +53,7 @@ const App = () => {
                   <Navbar />
                   <Routes>
                     <Route path="/home" element={<Home />} />
+                    <Route path="/festival" element={<Festival />} />
                     <Route path="/planning" element={<Planning />} />
                     <Route path="/inscription" element={<Inscription />} /> 
                     <Route path="/profil" element={<Profil />} />
