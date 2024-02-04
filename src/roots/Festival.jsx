@@ -12,6 +12,7 @@ const FestivalPage = () => {
 
     const { user } = useAuth();
     const userId = user.id;
+    
     //console.log('userId', userId);
 
 
@@ -91,6 +92,7 @@ const FestivalPage = () => {
 
   return (
     <div className='div-festival'>
+    
       <h2>Liste des Festivals</h2>
       {loading ? (
         <p>Chargement en cours...</p>
