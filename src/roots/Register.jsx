@@ -66,7 +66,7 @@ const Register = () => {
   };
 
   return (
-    <div>
+    <div className='div-register'>
       <h2>Inscription</h2>
       <form>
         <label>
@@ -175,8 +175,8 @@ const Register = () => {
           </label>
         </div>
         <select
-            value={vegetarien}
-            onChange={(e) => setVegetarien(e.target.value)}
+            value={vegetarien.toString()}
+            onChange={(e) => setVegetarien(e.target.value === 'true')}
           >
             <option value="false">Je ne suis pas végétarien</option>
             <option value="true">Je suis végétarien</option>

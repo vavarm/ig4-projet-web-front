@@ -8,6 +8,7 @@ import Planning from './roots/Planning';
 import Profil from './roots/Profil';
 import Login from './roots/Login';
 import Register from './roots/Register';
+import Inscription from './roots/Inscription';
 
 
 const theme = createTheme({
@@ -52,6 +53,7 @@ const App = () => {
                   <Routes>
                     <Route path="/home" element={<Home />} />
                     <Route path="/planning" element={<Planning />} />
+                    <Route path="/inscription" element={<Inscription />} /> 
                     <Route path="/profil" element={<Profil />} />
                   </Routes>
                 </>

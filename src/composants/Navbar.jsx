@@ -8,7 +8,7 @@ import deco from '../css/images/deconnexion.png';
 import axios from 'axios';
 
 const Navbar = () => {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -41,6 +41,13 @@ const Navbar = () => {
             Planning
           </Link>
         </li>
+        {user && user.role === 'Admin' && (
+        <li>
+          <Link to="/home/inscription" className="nav-link">
+            inscription
+          </Link>
+        </li>
+        )}
         <li>
           <Link to="/home/profil" className="nav-link">
             Profil
