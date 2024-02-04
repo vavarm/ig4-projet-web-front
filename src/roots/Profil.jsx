@@ -1,12 +1,14 @@
 import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 
 const Profil = () => {
   // Accéder aux données de l'utilisateur depuis le contexte d'authentification
-  const { user } = useAuth();
+  const { login, user } = useAuth();
+  const navigate = useNavigate();
 
   const [nom, setNom] = useState(user.nom);
   const [prenom, setPrenom] = useState(user.prenom);
@@ -15,7 +17,7 @@ const Profil = () => {
   const [adressePostale, setAdressePostale] = useState(user.adressePostale);
   const [codePostal, setCodePostal] = useState(user.codePostal);
   const [ville, setVille] = useState(user.ville);
-  const [taille_tshirt, setTaille_tshirt] = useState( user.taille_tshirt);
+  const [taille_tshirt, setTaille_tshirt] = useState(user.taille_tshirt);
   const [vegetarien, setVegetarien] = useState(user.vegetarien);
 
   const [isFormVisible, setIsFormVisible] = useState(false);
@@ -31,6 +33,7 @@ const Profil = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     console.log('Soumission du formulaire');
+
     try {
       // Effectuer la requête PATCH pour mettre à jour les informations de l'utilisateur
       const response = await axios.patch(`http://localhost:3000/benevoles/${user.id}`, {
@@ -46,12 +49,14 @@ const Profil = () => {
       });
       // Traiter la réponse de l'API
       console.log('Réponse de l\'API:', response.data);
+      login(response.data);
+      
+
     } catch (error) {
       console.error('Erreur lors de la soumission du formulaire:', error);
     }
     hideForm();
   };
-
 
   return (
     <div className='content'>
