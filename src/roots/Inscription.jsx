@@ -7,7 +7,6 @@ const Inscription = () => {
   const [benevoles, setBenevoles] = useState([]);
   const [selectedBenevole, setSelectedBenevole] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [compteValide, setCompteValide] = useState(false);
 
   useEffect(() => {
     const fetchBenevoles = async () => {
@@ -35,21 +34,18 @@ const Inscription = () => {
   };
 
   const handleApprove = async (benevole) => {
-    console.log('Approuver le bénévole:', benevole, 'ID :', benevole.id);
-    setCompteValide(true); 
+    console.log('Approuver le bénévole:', benevole, 'ID :', benevole.id); 
     // Envoyer une requête pour approuver le bénévole (mettre à jour compteValide à true)
     try {
-        const response = await axios.patch(`http://localhost:3000/benevoles/${benevole.id}`, {
-            compteValide 
+        const response = await axios.patch(`http://localhost:3000/benevoles/admin/${benevole.id}`, {
+            compteValide: true
             
         });
     
         console.log('Réponse de l\'API:', response.data);
     
         // Mettre à jour l'état local avec les nouvelles données
-        setBenevoles((prevBenevoles) => {
-          return prevBenevoles.map((item) => (item.id === benevole.id ? response.data : item));
-        });
+        setBenevoles((prevBenevoles) => prevBenevoles.filter((item) => item.id !== benevole.id));
       } catch (error) {
         console.error('Erreur lors de la validation du bénévole:', error);
       }
