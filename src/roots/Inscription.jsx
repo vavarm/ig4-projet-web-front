@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import '../css/Inscription.css';
+import.meta.env.VITE_BACKEND_URL;
 
 const Inscription = () => {
   const [benevoles, setBenevoles] = useState([]);
@@ -11,7 +12,7 @@ const Inscription = () => {
   useEffect(() => {
     const fetchBenevoles = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/benevoles');
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/benevoles`);
         const benevolesData = response.data;
 
         const nonValidatedBenevoles = benevolesData.filter(
@@ -37,7 +38,7 @@ const Inscription = () => {
     console.log('Approuver le bénévole:', benevole, 'ID :', benevole.id); 
     // Envoyer une requête pour approuver le bénévole (mettre à jour compteValide à true)
     try {
-        const response = await axios.patch(`http://localhost:3000/benevoles/admin/${benevole.id}`, {
+        const response = await axios.patch(`${import.meta.env.VITE_BACKEND_URL}/benevoles/admin/${benevole.id}`, {
             compteValide: true
             
         });
@@ -55,7 +56,7 @@ const Inscription = () => {
 
     const handleReject = async (benevole) => {
         try {
-          const response = await axios.delete(`http://localhost:3000/benevoles/${benevole.id}`, {});
+          const response = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/benevoles/${benevole.id}`, {});
       
           console.log('Réponse de l\'API:', response.data, "");
       

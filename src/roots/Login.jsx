@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 
 import '../css/Login.css';
+import.meta.env.VITE_BACKEND_URL
 
 const Login = () => {
   const [email, setemail] = useState('');
@@ -15,7 +16,7 @@ const Login = () => {
   const handleLogin = async () => {
     try {
       // Effectuer la requête POST d'authentification
-      const response = await axios.post('http://localhost:3000/auth/login', {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/login`, {
         email,
         password,
       });

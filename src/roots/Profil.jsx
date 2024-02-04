@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import.meta.env.VITE_BACKEND_URL;
 
 
 const Profil = () => {
@@ -36,7 +37,7 @@ const Profil = () => {
 
     try {
       // Effectuer la requête PATCH pour mettre à jour les informations de l'utilisateur
-      const response = await axios.patch(`http://localhost:3000/benevoles/${user.id}`, {
+      const response = await axios.patch(`${import.meta.env.VITE_BACKEND_URL}/benevoles/${user.id}`, {
         nom,
         prenom,
         adressePostale,

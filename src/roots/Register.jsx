@@ -4,6 +4,7 @@ import { Switch, Button } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 
 import '../css/Register.css';
+import.meta.env.VITE_BACKEND_URL;
 
 
 const Register = () => {
@@ -27,7 +28,7 @@ const Register = () => {
   const handleRegister = async () => {
     try {
       // Effectuer la requête POST d'inscription
-      const response = await axios.post('http://localhost:3000/benevoles', {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/benevoles`, {
         nom,
         prenom,
         email,

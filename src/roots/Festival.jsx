@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 
 import '../css/Festival.css';
+import.meta.env.VITE_BACKEND_URL;
 
 const FestivalPage = () => {
   const [festivals, setFestivals] = useState([]);
@@ -17,7 +18,7 @@ const FestivalPage = () => {
     useEffect(() => {
         const fetchFestivals = async () => {
           try {
-            const response = await axios.get('http://localhost:3000/festivals');
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/festivals`);
             setFestivals(response.data);
             setLoading(false);
           } catch (error) {
@@ -28,7 +29,7 @@ const FestivalPage = () => {
       
         const fetchFestivalsInscrits = async () => {
           try {
-            const response = await axios.get(`http://localhost:3000/inscriptions/benevole/${userId}`);
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/inscriptions/benevole/${userId}`);
             setFestivalsInscrits(response.data.map(item => item.festivalYear));
             console.log('Festivals inscrits:', response.data.map(item => item.festivalYear));
           } catch (error) {
@@ -43,20 +44,20 @@ const FestivalPage = () => {
       const handleInscription = async (festivalYearID) => {
         try {
           // Récupérer les festivals auxquels l'utilisateur est déjà inscrit
-          const response = await axios.get(`http://localhost:3000/inscriptions/benevole/${userId}`);
+          const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/inscriptions/benevole/${userId}`);
           const updatedFestivalsInscrits = response.data.map(item => item.festivalYear);
           
           // Envoyer une requête pour inscrire l'utilisateur au festival
           console.log('Inscription au festival:', festivalYearID, 'userId:', userId);
       
           if (updatedFestivalsInscrits.includes(festivalYearID)) {
-            const deleteResponse = await axios.delete(`http://localhost:3000/inscriptions/benevole/${userId}/festival/${festivalYearID}`, {});
+            const deleteResponse = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/inscriptions/benevole/${userId}/festival/${festivalYearID}`, {});
 
             setFestivalsInscrits((prevFestivalsInscrits) => {
                 return prevFestivalsInscrits.filter(year => year !== festivalYearID);
               });
           } else {
-            const postResponse = await axios.post('http://localhost:3000/inscriptions', { 
+            const postResponse = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/inscriptions`, { 
               "benevoleId": userId,
               "festivalYear": festivalYearID 
             });

@@ -7,6 +7,8 @@ import logo from '../css/images/logo.png';
 import deco from '../css/images/deconnexion.png';
 import axios from 'axios';
 
+import.meta.env.VITE_BACKEND_URL;
+
 const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -14,7 +16,7 @@ const Navbar = () => {
   const handleLogout = async () => {
     try {
       // Effectuer la requête POST de déconnexion
-      const response = await axios.post('http://localhost:3000/auth/logout');
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/logout`);
       // Naviguer vers la page de connexion après une déconnexion réussie
       console.log('Déconnexion');
       logout();
