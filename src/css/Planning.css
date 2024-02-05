@@ -1,51 +1,7 @@
-.planning-container {
-    padding: 20px;
+.planning-container{
+  margin-left : 30%;
 }
 
-.table-container{
-    margin-left: 25%;
-    padding: 20px;
-    border: #ba2121 1px solid;
-}
-
-.Table td.selected {
-  background-color: #61f19d; /* Couleur de fond éclairée pour les cellules sélectionnées */
-}
-/* Boutons de changement de jour */
-.Button {
-  margin-right: 5%;
-  margin-bottom: 8px;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ba2121;
-    background-color: #f2f2f2;
-    cursor: pointer;
-
-}
-
-/* Tableau */
-.Table {
-  width: 50%;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
-
-/* En-tête du tableau */
-.Table th {
-  background-color: #2ecc71;
-  border: 1px solid #ddd;
-  padding: 10px;
-  text-align: center;
-}
-
-/* Cellules du tableau */
-.Table td {
-  border: 1px solid #ddd;
-  padding:10px;
-  text-align: center;
-}
-
-/* Alternance de couleurs pour les lignes du tableau */
-.Table tr:nth-child(even) {
-  
+.root {
+  margin-left: 25%;
 }

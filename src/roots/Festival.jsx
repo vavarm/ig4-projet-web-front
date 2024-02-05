@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
+import FormulaireCreationFestival from '../composants/FormulaireCreationFestival'; // Remplacez le chemin par le bon chemin vers votre composant
+
 
 import '../css/Festival.css';
 import.meta.env.VITE_BACKEND_URL;
@@ -12,6 +14,7 @@ const FestivalPage = () => {
 
     const { user } = useAuth();
     const userId = user.id;
+    const isAdmin = user.role === 'Admin';
     
     //console.log('userId', userId);
 
@@ -88,11 +91,24 @@ const FestivalPage = () => {
           }
         }
       };
+
+    const [isFormVisible, setIsFormVisible] = useState(false);
+
+    const handleOpenForm = () => {
+        setIsFormVisible(true);
+    };
       
 
   return (
     <div className='div-festival'>
-    
+    {isAdmin && (
+        <>
+            <button className='bouton-festival' onClick={handleOpenForm}>
+            Créer un Festival
+            </button>
+            {isFormVisible && <FormulaireCreationFestival onClose={() => setIsFormVisible(false)} />}
+        </>
+    )}
       <h2>Liste des Festivals</h2>
       {loading ? (
         <p>Chargement en cours...</p>

@@ -1,111 +1,158 @@
 import React, { useState, useEffect, useCallback} from 'react';
 import { Container, Button, Progress, Text, RingProgress, Tabs, rem } from '@mantine/core';
+import { Fragment } from 'react';
 import '../css/Planning.css'; 
+import axios from 'axios';
+
+import.meta.env.VITE_BACKEND_URL;
 
 const Planning = () => {
-  const [selectedDay, setSelectedDay] = useState('samedi');
+  const [selectedDay, setSelectedDay] = useState('');
   const [selectedCells, setSelectedCells] = useState([]);
+  const [jours, setJours] = useState([]);
+  const [postes, setPostes] = useState([]);
+  const [horaires, setHoraires] = useState([]);
+  const [inscriptions, setInscriptions] = useState([]);
 
   const handleDaySwitch = (day) => {
     setSelectedDay(day);
+    console.log('jour selectionné:', selectedDay);
   };
 
-  const tablePostes = ['Accueil', 'Animation jeux', 'Vente restauration', 'Cuisine', 'Tombola', 'Forum']
-  const creneaux = ['9h-11h', '11h-14h', '14h-17h', '17h-20h', '20h-22h']
-  const benevolesData = [
-    { poste: 'Accueil', horaires: '9h-11h', jour: 'samedi', nombre: 3 },
-    { poste: 'Accueil', horaires: '11h-14h', jour: 'samedi', nombre: 2 },
-    { poste: 'Accueil', horaires: '14h-17h', jour: 'samedi', nombre: 1 },
-    { poste: 'Accueil', horaires: '17h-20h', jour: 'samedi', nombre: 2 },
-    { poste: 'Accueil', horaires: '20h-22h', jour: 'samedi', nombre: 3 },
-    { poste: 'Animation jeux', horaires: '9h-11h', jour: 'samedi', nombre: 1 },
-    { poste: 'Animation jeux', horaires: '11h-14h', jour: 'samedi', nombre: 2 },
-    { poste: 'Animation jeux', horaires: '14h-17h', jour: 'samedi', nombre: 3 },
-    { poste: 'Animation jeux', horaires: '17h-20h', jour: 'samedi', nombre: 2 },
-    { poste: 'Animation jeux', horaires: '20h-22h', jour: 'samedi', nombre: 1 },
-    { poste: 'Vente restauration', horaires: '9h-11h', jour: 'samedi', nombre: 2 },
-    { poste: 'Vente restauration', horaires: '11h-14h', jour: 'samedi', nombre: 3 },
-    { poste: 'Vente restauration', horaires: '14h-17h', jour: 'samedi', nombre: 2 },
-    { poste: 'Vente restauration', horaires: '17h-20h', jour: 'samedi', nombre: 1 },
-    { poste: 'Vente restauration', horaires: '20h-22h', jour: 'samedi', nombre: 2 },
-    { poste: 'Cuisine', horaires: '9h-11h', jour: 'samedi', nombre: 2 },
-    { poste: 'Cuisine', horaires: '11h-14h', jour: 'samedi', nombre: 1 },
-    { poste: 'Cuisine', horaires: '14h-17h', jour: 'samedi', nombre: 2 },
-    { poste: 'Cuisine', horaires: '17h-20h', jour: 'samedi', nombre: 3 },
-    { poste: 'Cuisine', horaires: '20h-22h', jour: 'samedi', nombre: 2 },
-    { poste: 'Tombola', horaires: '9h-11h', jour: 'samedi', nombre: 3 },
-    { poste: 'Tombola', horaires: '11h-14h', jour: 'samedi', nombre: 2 },
-    { poste: 'Tombola', horaires: '14h-17h', jour: 'samedi', nombre: 1 },
-    { poste: 'Tombola', horaires: '17h-20h', jour: 'samedi', nombre: 2 },
-    { poste: 'Tombola', horaires: '20h-22h', jour: 'samedi', nombre: 3 },
-    { poste: 'Forum', horaires: '9h-11h', jour: 'samedi', nombre: 2 },
-    { poste: 'Forum', horaires: '11h-14h', jour: 'samedi', nombre: 3 },
-    { poste: 'Forum', horaires: '14h-17h', jour: 'samedi', nombre: 2 },
-    { poste: 'Forum', horaires: '17h-20h', jour: 'samedi', nombre: 1 },
-    { poste: 'Forum', horaires: '20h-22h', jour: 'samedi', nombre: 2 }
-  ];  
-
-  const getNombreBenevoles = (poste, horaires, jour) => {
-    const benevolesInfo = benevolesData.find(
-      (info) => info.poste === poste && info.horaires === horaires && info.jour === jour
-    );
-    return benevolesInfo ? benevolesInfo.nombre : 0;
+  const setUp = async () => {
+    await getDay(2021);
+    await getPoste(2021);
+    await getHoraire(2021);
+    await getInscriptions(2021);
   };
 
-  const handleCellClick = useCallback((poste, horaire) => {
-    setSelectedCells((prevSelectedCells) => {
-      const cellKey = `${poste}-${horaire}`;
-      if (prevSelectedCells.includes(cellKey)) {
-        return prevSelectedCells.filter((key) => key !== cellKey);
-      } else {
-        return [...prevSelectedCells, cellKey];
-      }
-    });
-  }, []);
+  const getInscriptions = async (yearFestival) => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/plannings-espaces`);
+      const inscriptionsData = response.data;
+
+      // Structure de données pour stocker les informations sur les inscriptions
+      const inscriptionsMap = {};
+
+      inscriptionsData.forEach((inscription) => {
+        const { espace, creneauHoraire, jourId } = inscription;
+        const key = `${espace.nom}-${creneauHoraire.horaireDebutHeures + ':' + creneauHoraire.horaireDebutMinutes + '0 - ' + creneauHoraire.horaireFinHeures + ':' + creneauHoraire.horaireFinMinutes + '0'}-${creneauHoraire.jourId}`;
+        if (!inscriptionsMap[key]) {
+          inscriptionsMap[key] = {
+            inscrits: 0,
+            maximum: espace.nbPlacesMax,
+          };
+        }
+        inscriptionsMap[key].inscrits += 1;
+      });
+      setInscriptions(inscriptionsMap);
+      console.log(inscriptions);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getDay = async (yearFestival) => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/jours/festival/${yearFestival}`);
+      const liste = response.data;
+      setJours(liste.map((jour) => jour.label));
+      console.log(jours);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
+  const getPoste = async (yearFestival) => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/postes/festival/${yearFestival}`);
+      const liste = response.data;
+      // Transformez la liste des postes en une nouvelle liste avec les espaces associés
+      const postesAvecEspaces = liste.map((poste) => {
+        return {
+          nom: poste.nom,
+          espaces: poste.espaces.map((espace) => espace.nom),
+        };
+      });
+      setPostes(postesAvecEspaces);
+      console.log(postesAvecEspaces);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+ const getHoraire = async (yearFestival) => {
+  try{
+    const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/creneaux-horaire/festival/${yearFestival}`);
+    const liste = response.data;
+    setHoraires([...new Set(liste.map((horaire) => horaire.horaireDebutHeures + ':' + horaire.horaireDebutMinutes + '0 - ' + horaire.horaireFinHeures + ':' + horaire.horaireFinMinutes + '0'))]);
+    console.log(horaires);
+  }catch(error){
+    console.error(error);
+  }
+ }
+
 
   return (
-    <Tabs className="table-container" variant="outline" defaultValue="consulter" >
+    <><Button color="blue" onClick={() => setUp()}>Get</Button>
+    <Tabs className="table-container" variant="outline" defaultValue="consulter">
       <Tabs.List>
         <Tabs.Tab value="consulter">Consulter</Tabs.Tab>
         <Tabs.Tab value="s'inscrire">s'inscrire</Tabs.Tab>
       </Tabs.List>
       <Tabs.Panel value="consulter">
         <Container className="planning-container">
-          <Button color = "green"
-            onClick={() => handleDaySwitch('samedi')}
-            variant={selectedDay === 'samedi' ? 'primary' : 'outline'}
+          <Button color="green"
+            onClick={() => handleDaySwitch(jours[0])}
           >
-            Samedi
+            {jours[0]}
           </Button>
-          <Button color = "green"
-            onClick={() => handleDaySwitch('dimanche')}
-            variant={selectedDay === 'dimanche' ? 'primary' : 'outline'}
+          <Button color="green"
+            onClick={() => handleDaySwitch(jours[1])}
           >
-            Dimanche
+            {jours[1]}
           </Button>
 
           <table className="Table">
             <thead>
-              <tr>
-                <th>Horaires</th>
-                {tablePostes.map((poste, j) => (
-                  <th key={j}>{poste}</th>
-                ))}
-              </tr>
+            <tr>
+              <th></th>
+              {postes.map((poste) => (
+                <React.Fragment key={poste.nom}>
+                  <th colSpan={poste.espaces.length}>{poste.nom}</th>
+                </React.Fragment>
+              ))}
+            </tr>
+            <tr>
+              <th>Horaires</th>
+              {postes.map((poste) =>
+                poste.espaces.map((espace, i) => (
+                  <th key={i}>{espace}</th>
+                ))
+              )}
+            </tr>
             </thead>
             <tbody>
-              {(selectedDay === 'samedi' || selectedDay === 'dimanche') &&
-                creneaux.map((horaire, i) => (
+              {(jours.includes(selectedDay)) &&
+                horaires.map((horaire, i) => (
                   <tr key={i}>
                     {/* Colonne des horaires */}
                     <td>{horaire}</td>
                     {/* Colonnes des postes */}
-                    {tablePostes.map((poste, j) => (
-                      <td key={j}>
-                        {/* Affichage du nombre de bénévoles dans la cellule */}
-                          {getNombreBenevoles(poste, horaire, selectedDay)} / max
-                      </td>
-                    ))}
+                    {postes.map((poste) =>
+                      poste.espaces.map((espace, j) => {
+                        const key = `${espace}-${horaire}-${jours.indexOf(selectedDay)+1}`;
+                        const inscription = inscriptions[key];
+                        console.log(key);
+
+                        return (
+                          <td key={j}>
+                            {inscription ? `${inscription.inscrits} / ${inscription.maximum}` : '-'}
+                          </td>
+                        );
+                      })
+                    )}
+                    
                   </tr>
                 ))}
             </tbody>
@@ -113,40 +160,8 @@ const Planning = () => {
         </Container>
       </Tabs.Panel>
 
-      <Tabs.Panel value="s'inscrire">
-          <Container className="planning-container">
-            <table className="Table">
-              <thead>
-                <tr>
-                  <th>Horaires</th>
-                  {tablePostes.map((poste, j) => (
-                    <th key={j}>{poste}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {(selectedDay === 'samedi' || selectedDay === 'dimanche') &&
-                  creneaux.map((horaire, i) => (
-                    <tr key={i}>
-                      {/* Colonne des horaires */}
-                      <td>{horaire}</td>
-                      {/* Colonnes des postes */}
-                      {tablePostes.map((poste, j) => (
-                        <td
-                          key={j}
-                          onClick={() => handleCellClick(poste, horaire)}
-                          className={selectedCells.includes(`${poste}-${horaire}`) ? 'selected' : ''}
-                        >
-                          {getNombreBenevoles(poste, horaire, selectedDay)} / max
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </Container>
-        </Tabs.Panel>
-    </Tabs>
+      
+    </Tabs></>
   );
 };
 
