@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
+import { useAuth } from '../contexts/AuthContext'
 
 const FormulaireCreationFestival = ({ onClose }) => {
+  const axiosConfig = useAuth().axiosConfig
+
   const [nouveauFestival, setNouveauFestival] = useState({
     year: '',
     jours: [],
     postes: [],
-  });
+  })
 
   // Liste des jours et postes disponibles dans le formulaire
   const joursDisponibles = [
@@ -14,69 +17,79 @@ const FormulaireCreationFestival = ({ onClose }) => {
     { label: 'Samedi', numeroJour: 2 },
     { label: 'Dimanche', numeroJour: 3 },
     // Ajoutez d'autres jours au besoin
-  ];
+  ]
 
   const postesDisponibles = [
     { nom: 'Accueil' },
     { nom: 'Animations jeux' },
-    { nom: 'Vente restauration'},
-    { nom: 'Cuisine'},
-    { nom: 'Tombola'},
-    { nom: 'Forum associations'},
+    { nom: 'Vente restauration' },
+    { nom: 'Cuisine' },
+    { nom: 'Tombola' },
+    { nom: 'Forum associations' },
     // Ajoutez d'autres postes au besoin
-  ];
+  ]
 
   const handleChange = (e) => {
     setNouveauFestival({
       ...nouveauFestival,
       [e.target.name]: e.target.value,
-    });
-  };
+    })
+  }
 
   const handleJourChange = (e) => {
     const selectedJours = joursDisponibles
-      .filter(jour => e.target.checked && e.target.value === jour.numeroJour.toString())
-      .map(jour => ({ label: jour.label, numeroJour: jour.numeroJour }));
-    
+      .filter(
+        (jour) =>
+          e.target.checked && e.target.value === jour.numeroJour.toString()
+      )
+      .map((jour) => ({ label: jour.label, numeroJour: jour.numeroJour }))
+
     setNouveauFestival({
       ...nouveauFestival,
       jours: selectedJours,
-    });
-  };
+    })
+  }
 
   const handlePosteChange = (e) => {
     const selectedPostes = postesDisponibles
-      .filter(poste => e.target.checked && e.target.value === poste.nom)
-      .map(poste => ({ nom: poste.nom }));
-    
+      .filter((poste) => e.target.checked && e.target.value === poste.nom)
+      .map((poste) => ({ nom: poste.nom }))
+
     setNouveauFestival({
       ...nouveauFestival,
       postes: selectedPostes,
-    });
-  };
+    })
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    const { name, value } = e.target;
+    const { name, value } = e.target
 
-  // Convertir la valeur en nombre si ce n'est pas déjà un nombre
-  const numericValue = isNaN(value) ? value : parseInt(value, 10);
+    // Convertir la valeur en nombre si ce n'est pas déjà un nombre
+    const numericValue = isNaN(value) ? value : parseInt(value, 10)
 
-  setNouveauFestival({
-    ...nouveauFestival,
-    [name]: numericValue,
-  });
+    setNouveauFestival({
+      ...nouveauFestival,
+      [name]: numericValue,
+    })
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/festivals`, nouveauFestival);
-      console.log('Réponse de création du festival :', response.data);
-      onClose();
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/festivals`,
+        nouveauFestival,
+        axiosConfig
+      )
+      console.log('Réponse de création du festival :', response.data)
+      onClose()
     } catch (error) {
       //detail de l'erreur
-      console.error('Erreur lors de la création du festival :', error.response.data);        
+      console.error(
+        'Erreur lors de la création du festival :',
+        error.response.data
+      )
     }
-  };
+  }
 
   return (
     <div>
@@ -84,8 +97,8 @@ const FormulaireCreationFestival = ({ onClose }) => {
         <label>
           Année:
           <input
-            type="number"
-            name="year"
+            type='number'
+            name='year'
             value={nouveauFestival.year}
             onChange={handleChange}
             required
@@ -101,7 +114,7 @@ const FormulaireCreationFestival = ({ onClose }) => {
                   <td>{jour.label}</td>
                   <td>
                     <input
-                      type="checkbox"
+                      type='checkbox'
                       value={jour.numeroJour}
                       onChange={handleJourChange}
                     />
@@ -121,7 +134,7 @@ const FormulaireCreationFestival = ({ onClose }) => {
                   <td>{poste.nom}</td>
                   <td>
                     <input
-                      type="checkbox"
+                      type='checkbox'
                       value={poste.nom}
                       onChange={handlePosteChange}
                     />
@@ -132,10 +145,10 @@ const FormulaireCreationFestival = ({ onClose }) => {
           </table>
         </label>
 
-        <button type="submit">Créer le Festival</button>
+        <button type='submit'>Créer le Festival</button>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default FormulaireCreationFestival;
+export default FormulaireCreationFestival
