@@ -37,6 +37,10 @@ const Planning = () => {
     await getInscriptions(2021)
   }
 
+  useEffect(() => {
+    setUp()
+  }, [])
+
   const getInscriptions = async (yearFestival) => {
     try {
       const response = await axios.get(
@@ -142,9 +146,6 @@ const Planning = () => {
 
   return (
     <>
-      <Button color='blue' onClick={() => setUp()}>
-        Get
-      </Button>
       <Tabs
         className='table-container'
         variant='outline'
