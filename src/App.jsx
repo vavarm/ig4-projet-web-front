@@ -1,16 +1,21 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import { MantineProvider, createTheme, Button} from '@mantine/core';
-import { AuthProvider } from './contexts/AuthContext';
-import Navbar from './composants/Navbar';
-import Home from './roots/Home';
-import Planning from './roots/Planning';
-import Profil from './roots/Profil';
-import Login from './roots/Login';
-import Register from './roots/Register';
-import Inscription from './roots/Inscription';
-import Festival from './roots/Festival';
-
+import React, { useEffect } from 'react'
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+  useNavigate,
+} from 'react-router-dom'
+import { MantineProvider, createTheme, Button } from '@mantine/core'
+import Navbar from './composants/Navbar'
+import Home from './roots/Home'
+import Planning from './roots/Planning'
+import Profil from './roots/Profil'
+import Login from './roots/Login'
+import Register from './roots/Register'
+import Inscription from './roots/Inscription'
+import Festival from './roots/Festival'
+import { useAuth } from './contexts/AuthContext'
 
 const theme = createTheme({
   colors: {
@@ -32,50 +37,46 @@ const theme = createTheme({
       },
     }),
   },
-});
+})
 
 const App = () => {
+  const navigate = useNavigate()
+  const { checkAuth } = useAuth()
+  useEffect(() => {
+    if (!checkAuth()) {
+      // Rediriger vers la page de connexion si l'utilisateur n'est pas authentifié
+      navigate('/login')
+    }
+  }, [])
   return (
-    <AuthProvider>
-      <MantineProvider
-                theme={{
-                  
-                }}
-              >
-      <Router>
-        <Routes>
-          {/* Route englobant les pages nécessitant la Navbar */}
-          <Route
-            path="/home/*"
-            element={
-              
-                <>
-                  <Navbar />
-                  <Routes>
-                    <Route path="/home" element={<Home />} />
-                    <Route path="/festival" element={<Festival />} />
-                    <Route path="/planning" element={<Planning />} />
-                    <Route path="/inscription" element={<Inscription />} /> 
-                    <Route path="/profil" element={<Profil />} />
-                  </Routes>
-                </>
-              
-            }
-          />
+    <Routes>
+      {/* Route englobant les pages nécessitant la Navbar */}
+      <Route
+        path='/*'
+        element={
+          <>
+            <Navbar />
+            <Routes>
+              <Route path='/home' element={<Home />} />
+              <Route path='/festival' element={<Festival />} />
+              <Route path='/planning' element={<Planning />} />
+              <Route path='/inscription' element={<Inscription />} />
+              <Route path='/profil' element={<Profil />} />
+            </Routes>
+          </>
+        }
+      />
 
-          {/* Route spécifique pour la page de connexion */}
-          <Route path="/login" element={<Login />} />
+      {/* Route spécifique pour la page de connexion */}
+      <Route path='/login' element={<Login />} />
 
-          {/* Route pour la page d'inscription */}
-          <Route path="/register" element={<Register />} />
+      {/* Route pour la page d'inscription */}
+      <Route path='/register' element={<Register />} />
 
-          {/* Redirection vers /login par défaut */}
-          <Route path="/" element={<Navigate to="/login" />} />
-        </Routes>
-      </Router>
-      </MantineProvider>
-    </AuthProvider>
-  );
-};
+      {/* Redirection vers /login par défaut */}
+      <Route path='/' element={<Navigate to='/login' />} />
+    </Routes>
+  )
+}
 
-export default App;
+export default App
