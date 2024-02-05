@@ -41,7 +41,6 @@ const Planning = () => {
     try {
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/plannings-espaces`,
-        {},
         axiosConfig
       )
       const inscriptionsData = response.data
@@ -80,7 +79,6 @@ const Planning = () => {
     try {
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/jours/festival/${yearFestival}`,
-        {},
         axiosConfig
       )
       const liste = response.data
@@ -95,7 +93,6 @@ const Planning = () => {
     try {
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/postes/festival/${yearFestival}`,
-        {},
         axiosConfig
       )
       const liste = response.data
@@ -119,7 +116,6 @@ const Planning = () => {
         `${
           import.meta.env.VITE_BACKEND_URL
         }/creneaux-horaire/festival/${yearFestival}`,
-        {},
         axiosConfig
       )
       const liste = response.data

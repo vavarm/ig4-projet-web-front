@@ -17,7 +17,6 @@ const Inscription = () => {
       try {
         const response = await axios.get(
           `${import.meta.env.VITE_BACKEND_URL}/benevoles`,
-          {},
           axiosConfig
         )
         const benevolesData = response.data
@@ -68,7 +67,6 @@ const Inscription = () => {
     try {
       const response = await axios.delete(
         `${import.meta.env.VITE_BACKEND_URL}/benevoles/${benevole.id}`,
-        {},
         axiosConfig
       )
 

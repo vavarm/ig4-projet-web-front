@@ -25,14 +25,11 @@ const FestivalPage = () => {
     setIsAdmin(user.role === 'Admin')
   }, [user])
 
-  //console.log('userId', userId);
-
   useEffect(() => {
     const fetchFestivals = async () => {
       try {
         const response = await axios.get(
           `${import.meta.env.VITE_BACKEND_URL}/festivals`,
-          {},
           axiosConfig
         )
         setFestivals(response.data)
@@ -47,7 +44,6 @@ const FestivalPage = () => {
       try {
         const response = await axios.get(
           `${import.meta.env.VITE_BACKEND_URL}/inscriptions/benevole/${userId}`,
-          {},
           axiosConfig
         )
         setFestivalsInscrits(response.data.map((item) => item.festivalYear))
@@ -72,7 +68,6 @@ const FestivalPage = () => {
       // Récupérer les festivals auxquels l'utilisateur est déjà inscrit
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/inscriptions/benevole/${userId}`,
-        {},
         axiosConfig
       )
       const updatedFestivalsInscrits = response.data.map(
@@ -87,7 +82,6 @@ const FestivalPage = () => {
           `${
             import.meta.env.VITE_BACKEND_URL
           }/inscriptions/benevole/${userId}/festival/${festivalYearID}`,
-          {},
           axiosConfig
         )
 
