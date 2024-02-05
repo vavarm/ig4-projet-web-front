@@ -31,7 +31,7 @@ const Login = () => {
         login(response.data)
 
         // Naviguer vers la page d'accueil après une connexion réussie
-        navigate('/home')
+        navigate('/festival')
       } else {
         // Afficher une alerte si le compte n'est pas validé
         alert(
