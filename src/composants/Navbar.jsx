@@ -49,6 +49,13 @@ const Navbar = () => {
             Festival
           </Link>
         </li>
+        {user && user.role === 'Admin' && (
+          <li>
+            <Link to='/jeux' className='nav-link'>
+              Jeux
+            </Link>
+          </li>
+        )}
         <li>
           <Link to='/planning' className='nav-link'>
             Planning

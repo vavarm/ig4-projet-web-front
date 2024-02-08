@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import axios from 'axios'
 import FormulaireCreationFestival from '../composants/FormulaireCreationFestival' // Remplacez le chemin par le bon chemin vers votre composant

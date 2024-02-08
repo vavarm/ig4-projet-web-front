@@ -11,10 +11,13 @@
   },
   "dependencies": {
     "@mantine/core": "^7.5.1",
+    "@mantine/hooks": "^7.5.1",
     "@mui/material": "^5.15.7",
     "axios": "^1.6.7",
+    "papaparse": "^5.4.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-papaparse": "^4.4.0",
     "react-router-dom": "^6.21.3"
   },
   "devDependencies": {

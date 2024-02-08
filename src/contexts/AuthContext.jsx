@@ -34,9 +34,9 @@ export const AuthProvider = ({ children }) => {
       console.log('setting user and token')
       setUser(user)
       setToken(token)
-      return true
+      return user
     }
-    return false
+    return null
   }
 
   return (
