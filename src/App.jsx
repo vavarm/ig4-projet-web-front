@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import {
   BrowserRouter as Router,
   Route,
@@ -15,6 +15,7 @@ import Login from './roots/Login'
 import Register from './roots/Register'
 import Inscription from './roots/Inscription'
 import Festival from './roots/Festival'
+import Jeux from './roots/Jeux'
 import { useAuth } from './contexts/AuthContext'
 
 const theme = createTheme({
@@ -41,9 +42,10 @@ const theme = createTheme({
 
 const App = () => {
   const navigate = useNavigate()
-  const { checkAuth } = useAuth()
+  const { checkAuth, user } = useAuth()
   useEffect(() => {
-    if (!checkAuth()) {
+    const user = checkAuth()
+    if (!user) {
       // Rediriger vers la page de connexion si l'utilisateur n'est pas authentifié
       navigate('/login')
     }
@@ -59,6 +61,7 @@ const App = () => {
             <Routes>
               <Route path='/home' element={<Home />} />
               <Route path='/festival' element={<Festival />} />
+              <Route path='/jeux' element={<Jeux />} />
               <Route path='/planning' element={<Planning />} />
               <Route path='/inscription' element={<Inscription />} />
               <Route path='/profil' element={<Profil />} />
