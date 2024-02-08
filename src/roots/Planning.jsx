@@ -18,6 +18,8 @@ import.meta.env.VITE_BACKEND_URL
 const Planning = () => {
   const axiosConfig = useAuth().axiosConfig
 
+  const { login, user } = useAuth()
+
   const [selectedDay, setSelectedDay] = useState('')
   const [selectedCells, setSelectedCells] = useState([])
   const [jours, setJours] = useState([])
@@ -53,12 +55,12 @@ const Planning = () => {
       const inscriptionsMap = {}
 
       inscriptionsData.forEach((inscription) => {
-        const { espace, creneauHoraire, jourId } = inscription
+        const { espace, creneauHoraire, jourId, creneauHoraireId } = inscription
         const key = `${espace.nom}-${
           creneauHoraire.horaireDebutHeures +
           ':' +
           creneauHoraire.horaireDebutMinutes +
-          '0 - ' +
+          '0-' +
           creneauHoraire.horaireFinHeures +
           ':' +
           creneauHoraire.horaireFinMinutes +
@@ -104,7 +106,10 @@ const Planning = () => {
       const postesAvecEspaces = liste.map((poste) => {
         return {
           nom: poste.nom,
-          espaces: poste.espaces.map((espace) => espace.nom),
+          espaces: poste.espaces.map((espace) => ({
+            nom: espace.nom,
+            id: espace.id,
+          })),
         }
       })
       setPostes(postesAvecEspaces)
@@ -121,28 +126,87 @@ const Planning = () => {
           import.meta.env.VITE_BACKEND_URL
         }/creneaux-horaire/festival/${yearFestival}`,
         axiosConfig
-      )
-      const liste = response.data
-      setHoraires([
-        ...new Set(
-          liste.map(
-            (horaire) =>
-              horaire.horaireDebutHeures +
-              ':' +
-              horaire.horaireDebutMinutes +
-              '0 - ' +
-              horaire.horaireFinHeures +
-              ':' +
-              horaire.horaireFinMinutes +
-              '0'
-          )
-        ),
-      ])
-      console.log(horaires)
+      );
+      const liste = response.data;
+      console.log("resultat : ",response.data)
+      // Modifier la liste pour inclure l'ID
+      const horairesListe = liste.map((horaire) => {
+        return {
+          id: horaire.id,
+          heureDebut: `${horaire.horaireDebutHeures}:${horaire.horaireDebutMinutes}0`,
+          heureFin: `${horaire.horaireFinHeures}:${horaire.horaireFinMinutes}0`,
+        };
+      });
+      setHoraires(horairesListe);
+      console.log(horairesListe);
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
+
+  const handleInscription = async (espace, horaire, jourId) => {
+    console.log('Inscription de :', user.prenom, user.id, "à l'espace :", espace.id ,"au creneau :", horaire.id);
+    
+    try {
+      // Effectuer une requête GET pour vérifier l'inscription existante du bénévole à cet espace
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/plannings-espaces/benevole/${user.id}/espace/${espace.id}`,
+        axiosConfig
+      );
+      console.log(response.data);
+  
+      // Si le bénévole est déjà inscrit à cet espace, supprimer l'inscription
+      if (response.data.length > 0 && response.data[0].id) {
+        const existingInscriptionId = response.data[0].id;
+        await axios.delete(
+          `${import.meta.env.VITE_BACKEND_URL}/plannings-espaces/${existingInscriptionId}`,
+          axiosConfig
+        );
+        
+        // Mise à jour de l'état des inscriptions pour refléter la suppression
+        const key = `${espace.nom}-${horaire.heureDebut}-${horaire.heureFin}-${jourId}`;
+        const updatedInscriptions = { ...inscriptions };
+        if (updatedInscriptions[key]) {
+          updatedInscriptions[key].inscrits -= 1;
+          setInscriptions(updatedInscriptions);
+        }
+        
+        console.log('Inscription supprimée');
+      } else {
+        // Si le bénévole n'est pas déjà inscrit à cet espace, ajouter une nouvelle inscription
+        await axios.post(
+          `${import.meta.env.VITE_BACKEND_URL}/plannings-espaces`,
+          {
+            espaceId: espace.id,
+            benevoleId: user.id,
+            creneauHoraireId: horaire.id,
+          },
+          axiosConfig
+        );
+  
+        // Mise à jour de l'état des inscriptions pour refléter l'ajout
+        const key = `${espace.nom}-${horaire.heureDebut}-${horaire.heureFin}-${jourId}`;
+        const updatedInscriptions = { ...inscriptions };
+        if (!updatedInscriptions[key]) {
+          updatedInscriptions[key] = { inscrits: 0, maximum: espace.nbPlacesMax };
+        }
+        updatedInscriptions[key].inscrits += 1;
+        setInscriptions(updatedInscriptions);
+  
+        console.log('Nouvelle inscription ajoutée');
+      }
+    } catch (error) {
+      // Gérer les erreurs de manière appropriée
+      if (error.response) {
+        console.error('Réponse détaillée du serveur:', error.response.data);
+      } else if (error.request) {
+        console.error('Aucune réponse du serveur reçue');
+      } else {
+        console.error('Erreur lors de la requête:', error.message);
+      }
+    }
+  };
+  
 
   return (
     <>
@@ -177,37 +241,93 @@ const Planning = () => {
                 <tr>
                   <th>Horaires</th>
                   {postes.map((poste) =>
-                    poste.espaces.map((espace, i) => <th key={i}>{espace}</th>)
+                    poste.espaces.map((espace, i) => <th key={i}>{espace.nom}</th>)
+                  )}
+                </tr>
+              </thead>
+                <tbody>
+                  {jours.includes(selectedDay) &&
+                    horaires.map((horaire, i) => (
+                      <tr key={i}>
+                        {/* Colonne des horaires */}
+                        <td>{horaire.heureDebut}-{horaire.heureFin}</td>
+                        {/* Colonnes des postes */}
+                        {postes.map((poste) =>
+                          poste.espaces.map((espace, j) => {
+                            const key = `${espace.nom}-${horaire.heureDebut}-${horaire.heureFin}-${
+                              jours.indexOf(selectedDay) + 1
+                            }`
+                            const inscription = inscriptions[key]
+                            console.log(key)
+
+                            return (
+                              <td key={j}>
+                                {inscription
+                                  ? `${inscription.inscrits} / ${inscription.maximum}`
+                                  : '-'}
+                              </td>
+                            )
+                          })
+                        )}
+                      </tr>
+                    ))}
+                </tbody>
+            </table>
+          </Container>
+        </Tabs.Panel>
+        <Tabs.Panel value="s'inscrire">
+          <Container className='planning-container'>
+            <Button color='green' onClick={() => handleDaySwitch(jours[0])}>
+              {jours[0]}
+            </Button>
+            <Button color='green' onClick={() => handleDaySwitch(jours[1])}>
+              {jours[1]}
+            </Button>
+
+            <table className='Table'>
+              <thead>
+                <tr>
+                  <th></th>
+                  {postes.map((poste) => (
+                    <React.Fragment key={poste.nom}>
+                      <th colSpan={poste.espaces.length}>{poste.nom}</th>
+                    </React.Fragment>
+                  ))}
+                </tr>
+                <tr>
+                  <th>Horaires</th>
+                  {postes.map((poste) =>
+                    poste.espaces.map((espace, i) => <th key={i}>{espace.nom}</th>)
                   )}
                 </tr>
               </thead>
               <tbody>
-                {jours.includes(selectedDay) &&
-                  horaires.map((horaire, i) => (
-                    <tr key={i}>
-                      {/* Colonne des horaires */}
-                      <td>{horaire}</td>
-                      {/* Colonnes des postes */}
-                      {postes.map((poste) =>
-                        poste.espaces.map((espace, j) => {
-                          const key = `${espace}-${horaire}-${
-                            jours.indexOf(selectedDay) + 1
-                          }`
-                          const inscription = inscriptions[key]
-                          console.log(key)
+                  {jours.includes(selectedDay) &&
+                    horaires.map((horaire, i) => (
+                      <tr key={i}>
+                        {/* Colonne des horaires */}
+                        <td>{horaire.heureDebut}-{horaire.heureFin}</td>
+                        {/* Colonnes des postes */}
+                        {postes.map((poste) =>
+                          poste.espaces.map((espace, j) => {
+                            const key = `${espace.nom}-${horaire.heureDebut}-${horaire.heureFin}-${
+                              jours.indexOf(selectedDay) + 1
+                            }`
+                            const inscription = inscriptions[key]
+                            console.log(key)
 
-                          return (
-                            <td key={j}>
-                              {inscription
-                                ? `${inscription.inscrits} / ${inscription.maximum}`
-                                : '-'}
-                            </td>
-                          )
-                        })
-                      )}
-                    </tr>
-                  ))}
-              </tbody>
+                            return (
+                              <td key={j} onClick={() => handleInscription(espace, horaire, jours.indexOf(selectedDay) + 1)}>
+                                {inscription
+                                  ? `${inscription.inscrits} / ${inscription.maximum}`
+                                  : '-'}
+                              </td>
+                            )
+                          })
+                        )}
+                      </tr>
+                    ))}
+                </tbody>
             </table>
           </Container>
         </Tabs.Panel>
