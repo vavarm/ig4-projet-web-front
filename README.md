@@ -1,8 +1,33 @@
-# React + Vite
+<p align="center">
+  <h1>Festival du jeu de Montpellier - Système de gestion des bénévoles
+    <br/>
+    Frontend
+  </h1>
+</p>
+<p align="center">
+  <a href="http://nestjs.com/" target="blank"><img src="https://ig4-projet-web-front.onrender.com/assets/logo-LIKW8LqM.png" width="200" alt="Nest Logo" /></a>
+</p>
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+  <p align="center">Site Web développé en ReactJS permettant de gérer des bénévoles et leurs inscriptions à des postes bénévoles lors d'évènements.</p>
 
-Currently, two official plugins are available:
+## Dependencies
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- NodeJS
+
+## Installation
+
+```bash
+$ yarn install
+```
+
+## Running the app
+
+```bash
+yarn dev
+```
+
+## Build the app into a static site ready for production deployment
+
+```bash
+yarn build
+```
